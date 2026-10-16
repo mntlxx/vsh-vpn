@@ -3,4 +3,6 @@ static/testing/cinema/*
 static/testing/player/*.mp3
 static/testing/player/*.wav
 static/testing/player/*.ogg
-!my_folder/.gitkeep
+!static/testing/cinema/.gitkeep
+!static/testing/player/.gitkeep
+!static/testing/player/place-tracks-here.txt
