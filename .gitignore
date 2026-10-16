@@ -1,1 +1,6 @@
 venv
+static/testing/cinema/*
+static/testing/player/*.mp3
+static/testing/player/*.wav
+static/testing/player/*.ogg
+!my_folder/.gitkeep

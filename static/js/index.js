@@ -6,13 +6,16 @@ const phrases = [
     "Подключаемся к серверу...",
     "Загружаем интерфейс...",
     "Готовим данные...",
-    "Отличного дня!",
+    "Отличного дня...",
     "Ищем лазейки..."
 ];
 
+const userId = tg.initDataUnsafe?.user?.id || 123456789;
+document.getElementById('user-id-display').textContent = userId;
+
 const loadingText = document.getElementById("loading-text");
 const loadingScreen = document.getElementById("loading-screen");
-const contentScreen = document.getElementById("content");
+const appContainer = document.getElementById("app-container");
 
 // Переключение рандомных фраз при загрузке
 const intervalId = setInterval(() => {
@@ -21,29 +24,31 @@ const intervalId = setInterval(() => {
 }, 1200);
 
 // ==========================================
-// ВРЕМЕННЫЙ СКРИПТ (Эмуляция плавного перехода)
+// ЭМУЛЯЦИЯ ЗАГРУЗКИ ПРИЛОЖЕНИЯ
 // ==========================================
 setTimeout(() => {
-    // Подставляем данные
+    // Подставляем данные в поля главной страницы
     document.getElementById('sub_link').value = 'http://123.45.67.89:2053/sub/test_sub_id_123';
+    document.getElementById('stat_link').value = 'Использовано: 14.2 GB / Безлимит';
+    document.getElementById('server_status').value = 'Нидерланды (NL-01) — Онлайн (12ms)';
 
     clearInterval(intervalId);
 
-    // 1. Показываем контент под экраном загрузки
-    contentScreen.style.display = 'flex';
+    // 1. Показываем контейнер приложения
+    appContainer.style.display = 'flex';
 
-    // 2. Анимируем: контент мягко проявляется, а лоадер плавно улетает наверх
+    // 2. Анимируем появление главной секции и улетание лоадера вверх
     requestAnimationFrame(() => {
-        contentScreen.classList.add('show-up');
+        document.getElementById('page-main').classList.add('show-up');
         loadingScreen.classList.add('hide-up');
     });
 
-    // 3. Полностью отключаем заставку после анимации
+    // 3. Убираем лоадер из DOM после завершения анимации
     setTimeout(() => {
         loadingScreen.style.display = 'none';
     }, 600);
 
-}, 1000);
+}, 2000);
 
 /*
 // КОГДА БУДЕТ ГОТОВ БЭКЕНД — РАСКОММЕНТИРУЕШЬ ЭТОТ БЛОК:
@@ -52,14 +57,15 @@ fetch(`/api/get_config/${userId}`)
     .then(res => res.json())
     .then(data => {
         document.getElementById('sub_link').value = data.sub_link || '';
-        document.getElementById('vless_link').value = data.vless_link || '';
+        document.getElementById('stat_link').value = data.traffic_stats || '';
+        document.getElementById('server_status').value = data.server_status || '';
         
         clearInterval(intervalId);
-        contentScreen.style.display = 'flex';
+        appContainer.style.display = 'flex';
         
         requestAnimationFrame(() => {
+            document.getElementById('page-main').classList.add('show-up');
             loadingScreen.classList.add('hide-up');
-            contentScreen.classList.add('show-up');
         });
         
         setTimeout(() => {
@@ -70,6 +76,45 @@ fetch(`/api/get_config/${userId}`)
         if (loadingText) loadingText.textContent = "Ошибка загрузки";
     });
 */
+
+// ==========================================
+// SPA ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК (РОУТИНГ)
+// ==========================================
+function switchTab(tabName) {
+    if (tg.HapticFeedback) {
+        tg.HapticFeedback.selectionChanged();
+    }
+
+    // Скрываем все секции
+    document.querySelectorAll('.page-section').forEach(section => {
+        section.style.display = 'none';
+        section.classList.remove('show-up');
+    });
+
+    // Показываем нужную секцию
+    const targetSection = document.getElementById(`page-${tabName}`);
+    if (targetSection) {
+        targetSection.style.display = 'flex';
+        requestAnimationFrame(() => {
+            targetSection.classList.add('show-up');
+        });
+    }
+
+    // Управляем подсветкой кнопок в нижнем баре (Главная и Настройки)
+    const navMain = document.getElementById('nav-main');
+    const navSettings = document.getElementById('nav-settings');
+
+    navMain.classList.toggle('active', tabName === 'main');
+    navSettings.classList.toggle('active', tabName === 'settings');
+
+    // Закрываем меню при клике
+    const menu = document.getElementById("expanded-menu");
+    const icon = document.getElementById("more-icon");
+    if (menu.classList.contains("open")) {
+        menu.classList.remove("open");
+        icon.style.transform = "rotate(0deg)";
+    }
+}
 
 // Выдвижная панель меню навигации
 function toggleMoreSettings() {
@@ -89,7 +134,7 @@ function toggleMoreSettings() {
     }
 }
 
-// Обработка клика по кнопкам выдвижного меню
+// Клик по пунктам меню в разработке
 function onMenuClick(sectionName) {
     if (tg.HapticFeedback) {
         tg.HapticFeedback.selectionChanged();
@@ -119,4 +164,198 @@ function showToast(message = 'Скопировано в буфер обмена!
     setTimeout(() => {
         toast.classList.remove("show");
     }, 2000);
+}
+
+function openYouTubeApp() {
+    window.open('https://youtube.com', '_blank');
+}
+
+// ==========================================
+// ЛОКАЛЬНЫЙ АУДИОПЛЕЕР
+// ==========================================
+
+// Список тестовых треков из папки ../testing/player
+// Можешь добавлять сюда свои файлы по мере необходимости
+const playlistTracks = [
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+    { title: "Тестовый трек 1", file: "../testing/player/track1.mp3", format: "MP3" },
+    { title: "Электронный вайб", file: "../testing/player/track2.wav", format: "WAV" },
+    { title: "Космический эмбиент", file: "../testing/player/track3.ogg", format: "OGG" },
+];
+
+let currentTrackIndex = 0;
+const audioElement = new Audio();
+let isPlaying = false;
+
+// Инициализация плейлиста при загрузке
+function initPlayer() {
+    const playlistContainer = document.getElementById("playlist");
+    if (!playlistContainer) return;
+
+    playlistContainer.innerHTML = "";
+
+    playlistTracks.forEach((track, index) => {
+        const item = document.createElement("div");
+        item.className = `playlist-item ${index === currentTrackIndex ? 'active' : ''}`;
+        item.innerHTML = `
+            <span>${track.title}</span>
+            <span class="format-badge">${track.format}</span>
+        `;
+        item.onclick = () => selectAndPlayTrack(index);
+        playlistContainer.appendChild(item);
+    });
+
+    if (playlistTracks.length > 0) {
+        audioElement.src = playlistTracks[0].file;
+        document.getElementById("current-track-title").textContent = playlistTracks[0].title;
+    }
+}
+
+// Выбор и запуск трека из списка
+function selectAndPlayTrack(index) {
+    currentTrackIndex = index;
+    audioElement.src = playlistTracks[index].file;
+    document.getElementById("current-track-title").textContent = playlistTracks[index].title;
+    
+    playTrack();
+    updatePlaylistUI();
+}
+
+// Воспроизведение / Пауза
+function togglePlay() {
+    if (isPlaying) {
+        pauseTrack();
+    } else {
+        playTrack();
+    }
+}
+
+function playTrack() {
+    audioElement.play().then(() => {
+        isPlaying = true;
+        document.getElementById("play-btn").textContent = "⏸";
+        if (window.Telegram?.WebApp?.HapticFeedback) {
+            Telegram.WebApp.HapticFeedback.impactOccurred('light');
+        }
+    }).catch(err => {
+        console.error("Ошибка воспроизведения:", err);
+        showToast("Файл трека не найден в testing/player");
+    });
+}
+
+function pauseTrack() {
+    audioElement.pause();
+    isPlaying = false;
+    document.getElementById("play-btn").textContent = "▶";
+}
+
+// Следующий / Предыдущий трек
+function nextTrack() {
+    currentTrackIndex = (currentTrackIndex + 1) % playlistTracks.length;
+    selectAndPlayTrack(currentTrackIndex);
+}
+
+function prevTrack() {
+    currentTrackIndex = (currentTrackIndex - 1 + playlistTracks.length) % playlistTracks.length;
+    selectAndPlayTrack(currentTrackIndex);
+}
+
+// Обновление подсветки активного трека в списке
+function updatePlaylistUI() {
+    const items = document.querySelectorAll(".playlist-item");
+    items.forEach((item, index) => {
+        if (index === currentTrackIndex) {
+            item.classList.add("active");
+        } else {
+            item.classList.remove("active");
+        }
+    });
+}
+
+// Форматирование времени (секунды -> мм:сс)
+function formatTime(seconds) {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+}
+
+// Отслеживание прогресса трека
+audioElement.addEventListener("timeupdate", () => {
+    if (audioElement.duration) {
+        const progressPercent = (audioElement.currentTime / audioElement.duration) * 100;
+        document.getElementById("progress-bar").style.width = `${progressPercent}%`;
+        
+        document.getElementById("current-time").textContent = formatTime(audioElement.currentTime);
+        document.getElementById("total-duration").textContent = formatTime(audioElement.duration);
+    }
+});
+
+// Автоматический переход к следующему треку по окончании
+audioElement.addEventListener("ended", () => {
+    nextTrack();
+});
+
+// Перемотка кликом по шкале
+function seekTrack(event) {
+    const container = event.currentTarget;
+    const clickX = event.offsetX;
+    const width = container.clientWidth;
+    const percent = clickX / width;
+    
+    if (audioElement.duration) {
+        audioElement.currentTime = percent * audioElement.duration;
+    }
+}
+
+// Вызываем инициализацию плеера при старте скрипта
+document.addEventListener("DOMContentLoaded", () => {
+    initPlayer();
+});
+
+function changeVolume(value) {
+    audioElement.volume = parseFloat(value);
+}
+
+let isSearchMode = false;
+
+function toggleSearchMode() {
+    isSearchMode = !isSearchMode;
+    
+    const playlistView = document.getElementById("view-playlist");
+    const searchView = document.getElementById("view-search");
+    const searchBtn = document.getElementById("search-toggle-btn");
+
+    if (isSearchMode) {
+        playlistView.style.display = "none";
+        searchView.style.display = "flex"; // Используем flex для сохранения верстки поиска
+        searchBtn.classList.add("active");
+    } else {
+        playlistView.style.display = "flex"; // Возвращаем flex, чтобы список треков снова корректно скроллился
+        searchView.style.display = "none";
+        searchBtn.classList.remove("active");
+    }
+
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    }
 }
