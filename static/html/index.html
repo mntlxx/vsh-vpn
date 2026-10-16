@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VoidSpace HUB</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="toast" class="toast">Скопировано в буфер обмена!</div>
+
+    <div id="loading-screen" class="loading-container">
+        <div class="loading-card">
+            <img src="../logo.png" alt="VoidSpace HUB" class="logo">
+            <div id="loading-text" class="loading-text">Загрузка ключей...</div>
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <div id="content" class="content" style="display: none;">
+        <header class="header">
+            <img src="../logo.png" alt="VoidSpace HUB" class="logo-small">
+            <p class="subtitle">Главная</p>
+        </header>
+
+        <div class="cards">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Ваша подписка</h3>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="sub_link" readonly onclick="this.select()">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Статистика подписки</h3>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="sub_link" readonly onclick="this.select()">
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>Состояния серверов</h3>
+                </div>
+                <div class="input-group">
+                    <input type="text" id="sub_link" readonly onclick="this.select()">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-wrapper">
+        <div id="expanded-menu" class="expanded-menu">
+            <div class="menu-grid">
+                <div class="grid-row-top">
+                    <button class="grid-btn flex-row" onclick="copyText('sub_link')">
+                        <img src="../svg/copy.svg" width="20" height="20" alt="VLESS">
+                        <span>Подписка</span>
+                    </button>
+                    <button class="grid-btn flex-row" onclick="onMenuClick('Профиль')">
+                        <img src="../svg/profile.svg" width="20" height="20" alt="Профиль">
+                        <span>Профиль</span>
+                    </button>
+                </div>
+                <div class="grid-row-bottom">
+                    <button class="grid-btn" onclick="window.location.href='./youtube.html'">
+                        <img src="../svg/youtube.svg" width="22" height="22" alt="YouTube">
+                        <span>YouTube</span>
+                    </button>
+                    <button class="grid-btn" onclick="window.location.href='./cinema.html'">
+                        <img src="../svg/cinema.svg" width="22" height="22" alt="Кино">
+                        <span>Кино</span>
+                    </button>
+                    <button class="grid-btn" onclick="window.location.href='./player.html'">
+                        <img src="../svg/player.svg" width="22" height="22" alt="Плеер">
+                        <span>Плеер</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <nav id="footer-panel" class="footer-nav">
+            <a href="#" class="nav-item active" title="Главная">
+                <img src="../svg/main.svg" width="22" height="22" alt="Главная">
+            </a>
+            <a href="#" class="nav-item" title="Настройки">
+                <img src="../svg/settings.svg" width="22" height="22" alt="Настройки">
+            </a>
+            <button class="nav-more-btn" onclick="toggleMoreSettings()">
+                <span id="more-icon">▲</span>
+            </button>
+        </nav>
+    </footer>
+
+    <script src="../js/index.js"></script>
+</body>
+</html>
