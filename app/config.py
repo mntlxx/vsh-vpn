@@ -1,8 +1,10 @@
 import os
 
 BOT_TOKEN = "8424240685:AAEng2_okNjA1fZbHL6i17LsSJPIknB1A8o"
-DB_PATH = "/etc/x-ui/x-ui.db"
+DB_PATH = "./db/x-ui.db"
 INBOUND_ID = 1
+
+SUB_PATH = "dde2qvjfmaxdfxsy"
 
 # Данные сервера для генерации ссылок
 SERVER_IP = "150.251.141.154"

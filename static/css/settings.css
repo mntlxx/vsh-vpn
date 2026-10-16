@@ -1,0 +1,31 @@
+/* Сетка кнопок выбора тем */
+.theme-buttons-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.theme-btn {
+    background: #181d26;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #94a3b8;
+    padding: 10px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.theme-btn:hover {
+    border-color: #3b82f6;
+    color: #f8fafc;
+}
+
+.theme-btn.active {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: #3b82f6;
+    color: #f8fafc;
+}

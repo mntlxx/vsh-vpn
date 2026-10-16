@@ -1,0 +1,158 @@
+/* ==========================================
+   ГЛАВНАЯ СТРАНИЦА И ВИДЖЕТЫ СТАТИСТИКИ
+   ========================================== */
+
+/* Карточка статистики подписки */
+.stat-dashboard-card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Вывод главного расхода трафика */
+.stat-main-usage {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 6px 0;
+}
+
+.usage-label {
+    font-size: 11px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.usage-value-group {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 2px 0;
+}
+
+.usage-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #f8fafc;
+    letter-spacing: -0.5px;
+}
+
+.usage-unit {
+    font-size: 16px;
+    font-weight: 700;
+    color: #60a5fa;
+}
+
+.usage-limit {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.stat-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.06);
+    width: 100%;
+    margin: 2px 0;
+}
+
+/* Сетка мелких метрик в стиле 3x-ui */
+.stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-item {
+    background: #181d26;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.stat-title {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+.stat-num {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+/* СОСТОЯНИЕ СИСТЕМЫ И МОДУЛЕЙ (Светлее и с бейджиками) */
+.status-overview-card {
+    background: #2a3140; /* Сделали фоновую карточку чуть посветлее */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.status-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1e2430; /* Чуть контрастнее подложка строчек */
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.status-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.status-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+.status-sub {
+    font-size: 10px;
+    color: #94a3b8;
+}
+
+/* Зеленые бейджики статусов */
+.status-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.status-pill.online {
+    background: rgba(52, 211, 153, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.status-pill.offline {
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-active {
+    background: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+}
+
+.badge-online {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+}

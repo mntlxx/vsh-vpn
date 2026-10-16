@@ -359,3 +359,92 @@ function toggleSearchMode() {
         Telegram.WebApp.HapticFeedback.impactOccurred('light');
     }
 }
+
+function openVideoPlayer(title, duration) {
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+    }
+    showToast(`Запуск: "${title}"`);
+}
+
+function openVideoPlayer(title, duration) {
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+    }
+
+    // Подставляем название в шапку страницы просмотра
+    document.getElementById('watch-video-title').textContent = title;
+    
+    // Переключаемся на секцию watch через нашу SPA-функцию
+    switchTab('watch');
+}
+
+// Дополнительные интерактивные функции для страницы просмотра
+function toggleLike(btn) {
+    btn.classList.toggle('liked');
+    const isLiked = btn.classList.contains('liked');
+    if (isLiked) {
+        btn.style.color = '#ef4444';
+        showToast('Видео понравилось');
+    } else {
+        btn.style.color = '#f8fafc';
+    }
+}
+
+function toggleSubscribe(btn) {
+    btn.classList.toggle('subscribed');
+    const isSubscribed = btn.classList.contains('subscribed');
+    if (isSubscribed) {
+        btn.textContent = 'Вы подписаны';
+        showToast('Вы подписаны на канал');
+    } else {
+        btn.textContent = 'Подписаться';
+        showToast('Отписка от канала');
+    }
+}
+
+function openMoviePlayer(title, genres, year, rating) {
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('medium');
+    }
+
+    // Подставляем данные фильма на экран просмотра
+    document.getElementById('movie-title').textContent = title;
+    document.getElementById('movie-genres').textContent = genres;
+    document.getElementById('movie-year').textContent = year;
+
+    // Переключаемся на секцию просмотра кино
+    switchTab('movie-watch');
+}
+
+// Сохранение/синхронизация внешних плейлистов
+function saveIntegration(serviceName, inputId) {
+    const input = document.getElementById(inputId);
+    if (!input || !input.value.trim()) {
+        showToast('Введите корректную ссылку!');
+        return;
+    }
+
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.notificationOccurred('success');
+    }
+
+    showToast(`Плейлист ${serviceName} успешно синхронизирован!`);
+    input.value = '';
+}
+
+// Задел на будущее под смену тем оформления
+function setTheme(themeName, btnElement) {
+    // Подсветка активной кнопки темы
+    document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+    btnElement.classList.add('active');
+
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+        Telegram.WebApp.HapticFeedback.impactOccurred('light');
+    }
+
+    showToast(`Тема переключена: ${themeName}`);
+    
+    // В будущем здесь можно будет менять переменные :root или класс на body
+    // Например: document.body.className = `theme-${themeName}`;
+}

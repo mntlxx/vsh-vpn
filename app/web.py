@@ -1,41 +1,104 @@
 from fastapi import FastAPI, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
+import os
+
 from app import config
-from app.db import get_or_create_client
+from app.db import get_client_data_from_db, get_inbounds_from_db
 
-app = FastAPI()
+from app.yt_service import router as yt_router
 
+app = FastAPI(title="VoidSpace HUB")
+
+app.include_router(yt_router)
+
+# Монтирование статики
+app.mount("/css", StaticFiles(directory="static/css"), name="css")
+app.mount("/js", StaticFiles(directory="static/js"), name="js")
+app.mount("/svg", StaticFiles(directory="static/svg"), name="svg")
+app.mount("/testing", StaticFiles(directory="static/testing"), name="testing")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
-    with open("static/index.html", "r", encoding="utf-8") as f:
+    html_path = "static/html/index.html"
+    if not os.path.exists(html_path):
+        html_path = "static/html/index.html"
+    with open(html_path, "r", encoding="utf-8") as f:
         return f.read()
+
+@app.get("/403", response_class=HTMLResponse)
+async def access_denied_page():
+    html_path = "static/html/403.html"
+    if os.path.exists(html_path):
+        with open(html_path, "r", encoding="utf-8") as f:
+            return f.read()
+    return "Access Denied", 403
+
+@app.get("/logo.png")
+async def get_logo():
+    return FileResponse("static/logo.png")
 
 @app.get("/api/get_config/{tg_id}")
 async def api_get_config(tg_id: int):
-    # Автоматически создаем или получаем клиента из БД 3x-ui
-    client_data = await get_or_create_client(tg_id, f"User-{tg_id}")
-    if not client_data:
-        return {"error": "Failed to create client"}
+    client = await get_client_data_from_db(tg_id)
+    
+    # Если клиент равен None — отдаем 404
+    if not client:
+        return JSONResponse(
+            content={"access_denied": True, "error": "User not found"}, 
+            status_code=404
+        )
 
-    user_uuid = client_data["uuid"]
-    sub_id = client_data["subId"]
+    # Клиент найден — отдаем его конфигурацию
+    up_bytes = client.get("up", 0)
+    down_bytes = client.get("down", 0)
+    total_bytes = client.get("total", 0)
+    
+    used_bytes = up_bytes + down_bytes
+    used_gb = round(used_bytes / (1024**3), 2)
+    down_gb = round(down_bytes / (1024**3), 2)
+    up_gb = round(up_bytes / (1024**3), 2)
 
-    # Формируем прямую VLESS ссылку
-    vless_link = (
-        f"vless://{user_uuid}@{config.SERVER_IP}:{config.SERVER_PORT}?"
-        f"type=tcp&security=reality&pbk={config.PUBLIC_KEY}&fp=chrome"
-        f"&sni={config.SNI}&sid={config.SHORT_ID}&flow=xtls-rprx-vision#"
-        f"VoidSpace%20HUB"
-    )
+    sub_id = client.get("sub_id", f"sub_{tg_id}")
+    sub_path = client.get("subPath", config.SUB_PATH).strip("/")
+    sub_link = f"http://{config.SERVER_IP}:{config.SERVER_PORT}/{sub_path}/{sub_id}"
 
-    # Ссылка на подписку (Subscription link), которую кушают клиенты (NekoBox, v2rayN и т.д.)
-    # 3x-ui автоматически генерирует эндпоинт подписок, либо мы можем отдавать прямую строку
-    sub_link = f"http://{config.SERVER_IP}:{config.SERVER_PORT}/sub/{sub_id}"
+    expiry = client.get("expiry_time", 0)
+    expire_date = "Бессрочно" if expiry == 0 else "По расписанию"
+    
+    enable_val = client.get("enable", 1)
+    is_active = True if (enable_val == 1 or enable_val is True) else False
 
-    return {
-        "vless_link": vless_link,
-        "sub_link": sub_link
-    }
+    return JSONResponse(content={
+        "access_denied": False,
+        "is_active": is_active,
+        "status": "Активна" if is_active else "Неактивна",
+        "support_username": "@mntlxx72",
+        "sub_link": sub_link,
+        "used_bytes": f"{used_gb:.2f}",
+        "download": f"{down_gb:.2f} GB",
+        "upload": f"{up_gb:.2f} GB",
+        "expire_days": "∞" if expiry == 0 else "30",
+        "expire_date": expire_date
+    })
+
+@app.get("/api/system_status")
+async def system_status():
+    """Отдает реальные инбаунды из таблицы inbounds для отображения серверов"""
+    inbounds = await get_inbounds_from_db()
+    
+    servers_status = {}
+    for i, ib in enumerate(inbounds):
+        servers_status[f"server_{i}"] = {
+            "name": ib["remark"],
+            "status": "online" if ib["enable"] else "offline",
+            "protocol": ib["protocol"],
+            "port": ib["port"]
+        }
+
+    return JSONResponse(content={
+        "servers": servers_status,
+        "youtubegm": {"status": "online"},
+        "parser_worker": {"status": "online"}
+    })

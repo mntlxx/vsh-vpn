@@ -1,78 +1,114 @@
-import json
-import uuid
-import subprocess
-import aiosqlite
+import sqlite3
+import os
 from app import config
 
-async def get_or_create_client(tg_id: int, name: str):
-    email = str(tg_id)
-    async with aiosqlite.connect(config.DB_PATH) as db:
-        db.row_factory = aiosqlite.Row
+def get_db_connection():
+    """Подключение к SQLite базе 3x-ui"""
+    db_path = getattr(config, "DB_PATH", "xui.db")
+    if not os.path.exists(db_path):
+        return None
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        return conn
+    except Exception as e:
+        print(f"Ошибка подключения к БД 3x-ui: {e}")
+        return None
+
+async def get_client_data_from_db(tg_id: int):
+    conn = get_db_connection()
+    
+    # Если файла базы нет (например, локальный тест)
+    if not conn:
+        # ВНИМАНИЕ: Если хочешь протестировать страницу 403 локально без файла БД,
+        # раскомментируй строчку ниже (верни None):
+        # return None
         
-        # Получаем настройки инбаунда
-        async with db.execute("SELECT settings FROM inbounds WHERE id = ?", (config.INBOUND_ID,)) as cursor:
-            row = await cursor.fetchone()
-            if not row:
-                return None
-            settings = json.loads(row[0])
-
-        clients = settings.get("clients", [])
-        existing_client = None
-        
-        for client in clients:
-            if client.get("email") == email:
-                existing_client = client
-                break
-
-        # Если клиент уже есть, возвращаем его данные
-        if existing_client:
-            return {
-                "uuid": existing_client.get("id"),
-                "subId": existing_client.get("subId"),
-                "email": email
-            }
-
-        # Если нет — создаем нового
-        new_uuid = str(uuid.uuid4())
-        new_sub_id = uuid.uuid4().hex[:16] # Короткий токен для подписки
-        
-        new_client = {
-            "id": new_uuid,
-            "flow": "xtls-rprx-vision",
-            "email": email,
-            "limitIp": 0,
-            "totalGB": 0,
-            "expiryTime": 0,
-            "enable": True,
-            "tgId": str(tg_id),
-            "subId": new_sub_id
-        }
-        
-        clients.append(new_client)
-        settings["clients"] = clients
-
-        # Обновляем JSON в таблице inbounds
-        await db.execute(
-            "UPDATE inbounds SET settings = ? WHERE id = ?",
-            (json.dumps(settings), config.INBOUND_ID)
-        )
-
-        # Создаем запись в трафике
-        await db.execute(
-            """
-            INSERT OR IGNORE INTO client_traffics 
-            (inbound_id, enable, email, up, down, expiry_time, total, reset) 
-            VALUES (?, 1, ?, 0, 0, 0, 0, 0)
-            """,
-            (config.INBOUND_ID, email)
-        )
-        await db.commit()
-
-        # Перезапускаем Xray в 3x-ui, чтобы применился новый клиент
-        subprocess.run(["systemctl", "restart", "x-ui"], check=False)
-
         return {
-            "uuid": new_uuid,
-            "subId": new_sub_id,
-            "email": email
+            "sub_id": f"demo_sub_{tg_id}",
+            "up": 2400000000,
+            "down": 11800000000,
+            "total": 0,
+            "enable": 1,
+            "expiry_time": 0,
+            "subPath": config.SUB_PATH,
+            "exists": True
         }
+
+    try:
+        cursor = conn.cursor()
+        
+        # Ищем клиента в таблице clients по email или tg_id
+        cursor.execute(
+            "SELECT * FROM clients WHERE email LIKE ? OR tg_id = ?", 
+            (f"%{tg_id}%", tg_id)
+        )
+        client_row = cursor.fetchone()
+        
+        if not client_row:
+            conn.close()
+            return None  # <--- Клиента нет в базе!
+
+        traffic_row = None
+        client_email = client_row["email"]
+        cursor.execute(
+            "SELECT up, down, total FROM client_traffics WHERE email = ?",
+            (client_email,)
+        )
+        traffic_row = cursor.fetchone()
+
+        cursor.execute("SELECT value FROM settings WHERE key = 'subPath'")
+        setting_row = cursor.fetchone()
+        sub_path = setting_row["value"] if setting_row else config.SUB_PATH
+
+        conn.close()
+
+        data = dict(client_row)
+        if traffic_row:
+            data["up"] = traffic_row["up"]
+            data["down"] = traffic_row["down"]
+            data["total"] = traffic_row["total"]
+        data["subPath"] = sub_path
+        data["exists"] = True
+        return data
+
+    except Exception as e:
+        print(f"Ошибка запроса в БД 3x-ui: {e}")
+        if conn:
+            conn.close()
+        return None
+
+async def get_inbounds_from_db():
+    """
+    Достает список серверов/инбаундов из таблицы inbounds (remark, enable, port, protocol)
+    """
+    conn = get_db_connection()
+    if not conn:
+        # Мок-сервер для локальной разработки
+        return [{
+            "remark": "Сервер NL-01 (Нидерланды)",
+            "enable": True,
+            "port": 443,
+            "protocol": "vless"
+        }]
+
+    try:
+        cursor = conn.cursor()
+        cursor.execute("SELECT remark, enable, port, protocol FROM inbounds")
+        rows = cursor.fetchall()
+        conn.close()
+        
+        inbounds = []
+        for row in rows:
+            inbounds.append({
+                "remark": row["remark"] or "Без названия",
+                "enable": bool(row["enable"]),
+                "port": row["port"],
+                "protocol": row["protocol"]
+            })
+        return inbounds
+    except Exception as e:
+        print(f"Ошибка чтения inbounds из БД: {e}")
+        if conn:
+            conn.close()
+        return []

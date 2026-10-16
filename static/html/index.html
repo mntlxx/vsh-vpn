@@ -5,16 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>VoidSpace HUB</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/player.css">
+    <link rel="stylesheet" href="/css/profile.css">
+    <link rel="stylesheet" href="/css/settings.css">
+    <link rel="stylesheet" href="/css/youtube.css">
+    <link rel="stylesheet" href="/css/watch.css">
 </head>
 <body>
+    <input type="text" id="sub_link" readonly onclick="this.select()" style="display: none;">
     <!-- Всплывающее уведомление (Toast) -->
     <div id="toast" class="toast">Скопировано в буфер обмена!</div>
 
     <!-- Полноэкранный экран загрузки -->
     <div id="loading-screen" class="loading-container">
         <div class="loading-card">
-            <img src="../logo.png" alt="VoidSpace HUB" class="logo">
+            <img src="/static/logo.png" alt="VoidSpace HUB" class="logo">
             <div id="loading-text" class="loading-text">Загрузка ключей...</div>
             <div class="spinner"></div>
         </div>
@@ -26,33 +33,86 @@
         <!-- СЕКЦИЯ 1: ГЛАВНАЯ -->
         <section id="page-main" class="page-section">
             <header class="header">
-                <img src="../logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Главная</p>
+                <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
+                <p class="subtitle">Главная панель</p>
             </header>
 
             <div class="cards">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Ваша подписка</h3>
-                    </div>
-                    <div class="input-group">
-                        <input type="text" id="sub_link" readonly onclick="this.select()">
-                    </div>
-                </div>
-                <div class="card">
+                <!-- 1. СТАТИСТИКА ПОДПИСКИ -->
+                <div class="card stat-dashboard-card">
                     <div class="card-header">
                         <h3>Статистика подписки</h3>
+                        <span class="badge badge-active" id="sub-status-badge">Активна</span>
                     </div>
-                    <div class="input-group">
-                        <input type="text" id="stat_link" readonly onclick="this.select()">
+
+                    <div class="stat-main-usage">
+                        <span class="usage-label">Использовано</span>
+                        <div class="usage-value-group">
+                            <span class="usage-value" id="stat-used-bytes">14.20</span>
+                            <span class="usage-unit">GB</span>
+                        </div>
+                        <span class="usage-limit" id="stat-limit">из ∞ (Неограниченно)</span>
+                    </div>
+
+                    <div class="stat-divider"></div>
+
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <span class="stat-title">Осталось дней</span>
+                            <span class="stat-num" id="stat-days">∞</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-title">Срок действия</span>
+                            <span class="stat-num" id="stat-expire">Бессрочно</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-title">Загружено (Download)</span>
+                            <span class="stat-num" id="stat-down">11.80 GB</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-title">Отправлено (Upload)</span>
+                            <span class="stat-num" id="stat-up">2.40 GB</span>
+                        </div>
                     </div>
                 </div>
-                <div class="card">
+
+                <!-- 2. СОСТОЯНИЕ СЕРВЕРОВ (Отдельная карточка) -->
+                <div class="card status-overview-card">
                     <div class="card-header">
-                        <h3>Состояния серверов</h3>
+                        <h3>Состояние серверов</h3>
                     </div>
-                    <div class="input-group">
-                        <input type="text" id="server_status" readonly onclick="this.select()">
+                
+                    <!-- Добавили ID сюда, чтобы JS понимал, куда вставлять данные из базы -->
+                    <div class="status-list" id="servers-list-container">
+                        <!-- Здесь будет динамика из 3x-ui -->
+                    </div>
+                </div>
+
+                <!-- 3. СОСТОЯНИЕ МОДУЛЕЙ (Своя собственная карточка) -->
+                <div class="card status-overview-card">
+                    <div class="card-header">
+                        <h3>Активные модули</h3>
+                        <span class="badge" style="background: rgba(52, 211, 153, 0.2); color: #34d399;">Все системы в норме</span>
+                    </div>
+
+                    <div class="status-list">
+                        <!-- Модуль YouTubeGM -->
+                        <div class="status-row">
+                            <div class="status-info">
+                                <span class="status-name">YouTubeGM</span>
+                                <span class="status-sub">Обход блокировок YouTube</span>
+                            </div>
+                            <span class="status-pill online">Онлайн</span>
+                        </div>
+
+                        <!-- Модуль Parser Worker -->
+                        <div class="status-row">
+                            <div class="status-info">
+                                <span class="status-name">Parser Worker</span>
+                                <span class="status-sub">Парсер музыки</span>
+                            </div>
+                            <span class="status-pill online">Онлайн</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -61,43 +121,245 @@
         <!-- СЕКЦИЯ 2: YOUTUBE -->
         <section id="page-youtube" class="page-section" style="display: none;">
             <header class="header">
-                <img src="../logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">YouTube Gateway</p>
+                <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
+                <p class="subtitle">YouTubeGM</p>
             </header>
 
             <div class="cards">
-                <div class="card">
-                    <div class="card-header">
+                <!-- Статус обхода -->
+                <div class="card" style="padding: 14px 18px;">
+                    <div class="card-header" style="margin-bottom: 2px;">
                         <h3>Статус обхода</h3>
+                        <span class="badge" style="background: rgba(52, 211, 153, 0.2); color: #34d399;">Онлайн</span>
                     </div>
-                    <p class="small">Маршрутизация трафика видеохостинга оптимизирована через выделенный узел.</p>
-                    <button class="btn-copy" onclick="openYouTubeApp()">Открыть YouTube</button>
+                    <p class="small" style="margin-bottom: 0;">Маршрутизация видеопотоков оптимизирована.</p>
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Инструкция</h3>
+
+                <!-- КАТАЛОГ ВИДЕОКАРТОЧЕК -->
+                <div class="video-feed">
+                    <!-- Видео карточка 1 -->
+                    <div class="video-card" onclick="openVideoPlayer('Космические путешествия и как они устроены', '12:45')">
+                        <div class="video-thumbnail-wrapper">
+                            <div class="video-thumbnail" style="background: linear-gradient(135deg, #1e293b, #3b82f6);">
+                                <span class="play-icon-overlay">▶</span>
+                            </div>
+                            <span class="video-duration">12:45</span>
+                        </div>
+                        <div class="video-details">
+                            <h4 class="video-title">Космические путешествия и как они устроены</h4>
+                            <div class="video-meta">
+                                <span>VoidSpace Media</span>
+                                <span>•</span>
+                                <span>14 тыс. просмотров</span>
+                            </div>
+                        </div>
                     </div>
-                    <p class="small">При активном подключении VoidSpace HUB видео в высоком разрешении загружаются без ограничений скорости.</p>
+
+                    <!-- Видео карточка 2 -->
+                    <div class="video-card" onclick="openVideoPlayer('Секреты оптимизации VLESS-Reality узлов', '08:15')">
+                        <div class="video-thumbnail-wrapper">
+                            <div class="video-thumbnail" style="background: linear-gradient(135deg, #0f172a, #8b5cf6);">
+                                <span class="play-icon-overlay">▶</span>
+                            </div>
+                            <span class="video-duration">08:15</span>
+                        </div>
+                        <div class="video-details">
+                            <h4 class="video-title">Секреты оптимизации VLESS-Reality узлов</h4>
+                            <div class="video-meta">
+                                <span>Hub Tech</span>
+                                <span>•</span>
+                                <span>8.2 тыс. просмотров</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Видео карточка 3 -->
+                    <div class="video-card" onclick="openVideoPlayer('Киберпанк и эстетика темных интерфейсов', '21:00')">
+                        <div class="video-thumbnail-wrapper">
+                            <div class="video-thumbnail" style="background: linear-gradient(135deg, #18181b, #ec4899);">
+                                <span class="play-icon-overlay">▶</span>
+                            </div>
+                            <span class="video-duration">21:00</span>
+                        </div>
+                        <div class="video-details">
+                            <h4 class="video-title">Киберпанк и эстетика темных интерфейсов в UI/UX</h4>
+                            <div class="video-meta">
+                                <span>Design Lab</span>
+                                <span>•</span>
+                                <span>25 тыс. просмотров</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 3: КИНО -->
+        <!-- СЕКЦИЯ ПРОСМОТРА ВИДЕО (WATCH) -->
+        <section id="page-watch" class="page-section" style="display: none;">
+            <div class="watch-top-bar">
+                <button class="back-btn" onclick="switchTab('youtube')">
+                    ← Назад к ленте
+                </button>
+                <span class="watch-header-title">YouTubeGM</span>
+            </div>
+
+            <div class="cards">
+                <div class="card watch-player-card">
+                    <div class="video-container">
+                        <div class="video-placeholder-screen">
+                            <button class="big-play-btn" onclick="showToast('Воспроизведение видео...')">▶</button>
+                            <span class="live-badge">HD 1080p</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card watch-info-card">
+                    <h2 id="watch-video-title" class="watch-title">Название загружаемого видеоролика</h2>
+                    <div class="watch-stats">
+                        <span id="watch-video-views">14 тыс. просмотров</span>
+                        <span id="watch-video-date">Опубликовано 2 дня назад</span>
+                    </div>
+
+                    <div class="watch-actions">
+                        <button class="action-btn" onclick="toggleLike(this)">
+                            ❤️ <span id="like-count">1.4k</span>
+                        </button>
+                        <button class="action-btn" onclick="copyText('sub_link')">
+                            🔗 Поделиться
+                        </button>
+                        <button class="action-btn" onclick="showToast('Добавлено в избранное')">
+                            ⭐ В избранное
+                        </button>
+                    </div>
+
+                    <div class="channel-row">
+                        <div class="channel-avatar">VS</div>
+                        <div class="channel-meta">
+                            <h4>VoidSpace Media</h4>
+                            <p class="small">12.4 тыс. подписчиков</p>
+                        </div>
+                        <button class="subscribe-btn" onclick="toggleSubscribe(this)">Подписаться</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Похожие видео</h3>
+                    </div>
+                    <div class="related-feed">
+                        <div class="related-item" onclick="openVideoPlayer('Секреты оптимизации VLESS-Reality узлов', '08:15')">
+                            <div class="related-thumb" style="background: linear-gradient(135deg, #0f172a, #8b5cf6);"></div>
+                            <div class="related-info">
+                                <h4>Секреты оптимизации VLESS-Reality узлов</h4>
+                                <p>Hub Tech • 8.2 тыс. просмотров</p>
+                            </div>
+                        </div>
+                        <div class="related-item" onclick="openVideoPlayer('Киберпанк и эстетика темных интерфейсов', '21:00')">
+                            <div class="related-thumb" style="background: linear-gradient(135deg, #18181b, #ec4899);"></div>
+                            <div class="related-info">
+                                <h4>Киберпанк и эстетика темных интерфейсов</h4>
+                                <p>Design Lab • 25 тыс. просмотров</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ 3: КИНОТЕАТР (КАТАЛОГ) -->
         <section id="page-cinema" class="page-section" style="display: none;">
             <header class="header">
-                <img src="../logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Кинотеатр и Медиа</p>
+                <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
+                <p class="subtitle">Кинотеатр VoidSpace</p>
             </header>
 
             <div class="cards">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Доступные медиасервисы</h3>
+                <div class="card" style="padding: 14px 18px;">
+                    <div class="card-header" style="margin-bottom: 2px;">
+                        <h3>4K HDR Стриминг</h3>
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">Без лимита</span>
                     </div>
-                    <p class="small">Высокая скорость соединения позволяет просматривать фильмы в 4K HDR без задержек.</p>
-                    <div class="input-group">
-                        <button class="btn-copy" onclick="showToast('Каталог синхронизируется')">Открыть каталог релизов</button>
+                    <p class="small" style="margin-bottom: 0;">Прямой доступ к медиатеке релизов на максимальной скорости.</p>
+                </div>
+
+                <div class="cinema-feed">
+                    <div class="cinema-card" onclick="openMoviePlayer('Интерстеллар', 'Фантастика, Драма', '2014', '9.2')">
+                        <div class="cinema-poster-wrapper" style="background: linear-gradient(135deg, #090d16, #1e3a8a);">
+                            <span class="movie-rating-badge">⭐ 9.2</span>
+                            <div class="play-icon-overlay">▶</div>
+                        </div>
+                        <div class="cinema-details">
+                            <h4 class="cinema-title">Интерстеллар</h4>
+                            <p class="cinema-meta">Фантастика • 2014 • 2ч 49мин</p>
+                        </div>
                     </div>
+
+                    <div class="cinema-card" onclick="openMoviePlayer('Начало', 'Триллер, Фантастика', '2010', '8.8')">
+                        <div class="cinema-poster-wrapper" style="background: linear-gradient(135deg, #18181b, #3f3f46);">
+                            <span class="movie-rating-badge">⭐ 8.8</span>
+                            <div class="play-icon-overlay">▶</div>
+                        </div>
+                        <div class="cinema-details">
+                            <h4 class="cinema-title">Начало (Inception)</h4>
+                            <p class="cinema-meta">Фантастика • 2010 • 2ч 28мин</p>
+                        </div>
+                    </div>
+
+                    <div class="cinema-card" onclick="openMoviePlayer('Бегущий по лезвию 2049', 'Киберпанк, Драма', '2017', '8.5')">
+                        <div class="cinema-poster-wrapper" style="background: linear-gradient(135deg, #451a03, #b45309);">
+                            <span class="movie-rating-badge">⭐ 8.5</span>
+                            <div class="play-icon-overlay">▶</div>
+                        </div>
+                        <div class="cinema-details">
+                            <h4 class="cinema-title">Бегущий по лезвию 2049</h4>
+                            <p class="cinema-meta">Киберпанк • 2017 • 2ч 44мин</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ ПРОСМОТРА КИНО (MOVIE WATCH) -->
+        <section id="page-movie-watch" class="page-section" style="display: none;">
+            <div class="watch-top-bar">
+                <button class="back-btn" onclick="switchTab('cinema')">
+                    ← Назад к каталогу
+                </button>
+                <span class="watch-header-title">Кинозал</span>
+            </div>
+
+            <div class="cards">
+                <div class="card watch-player-card">
+                    <div class="video-container">
+                        <div class="video-placeholder-screen" style="background: linear-gradient(135deg, #090d16, #172554);">
+                            <button class="big-play-btn" onclick="showToast('Запуск видеопотока...')">▶</button>
+                            <span class="live-badge">4K ULTRA HD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card watch-info-card">
+                    <h2 id="movie-title" class="watch-title">Название фильма</h2>
+                    <div class="watch-stats">
+                        <span id="movie-genres">Фантастика, Драма</span>
+                        <span id="movie-year">2014</span>
+                    </div>
+
+                    <div class="watch-actions">
+                        <button class="action-btn" onclick="toggleLike(this)">
+                            ❤️ В избранное
+                        </button>
+                        <button class="action-btn" onclick="copyText('sub_link')">
+                            🔗 Ссылка на фильм
+                        </button>
+                        <button class="action-btn" onclick="showToast('Качество: Авто (4K)')">
+                            ⚙️ Качество
+                        </button>
+                    </div>
+
+                    <p class="small" style="margin-top: 6px; line-height: 1.5;">
+                        Когда засуха приводит человечество к продовольственному кризису, коллектив исследователей и ученых отправляется сквозь червоточину в путешествие, чтобы превзойти прежние ограничения для космических путешествий человека.
+                    </p>
                 </div>
             </div>
         </section>
@@ -105,15 +367,12 @@
         <!-- СЕКЦИЯ 4: ПЛЕЕР -->
         <section id="page-player" class="page-section" style="display: none;">
             <header class="header">
-                <img src="../logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Мини-плеер</p>
+                <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
+                <p class="subtitle">Плеер</p>
             </header>
 
             <div class="cards player-page-layout">
-                
-                <!-- Верхняя часть: меняющийся блок (Список треков ИЛИ Поиск) -->
                 <div class="card" id="dynamic-card-container">
-                    <!-- Блок 1: Список треков (по умолчанию) -->
                     <div id="view-playlist">
                         <div class="card-header">
                             <h3>Тестовые треки</h3>
@@ -122,7 +381,6 @@
                         <div class="playlist" id="playlist"></div>
                     </div>
 
-                    <!-- Блок 2: Поиск новых треков (скрыт по умолчанию) -->
                     <div id="view-search" style="display: none;">
                         <div class="card-header">
                             <h3>Поиск треков</h3>
@@ -135,13 +393,11 @@
                     </div>
                 </div>
 
-                <!-- Панель управления (Плейлисты + Кнопка поиска) прикреплена к нижней части -->
                 <div class="player-docked-bottom">
-                    <!-- Блок выбора плейлистов и кнопка поиска -->
                     <div class="card playlist-selector-card">
                         <div class="playlist-nav-bar">
                             <button class="search-toggle-btn" id="search-toggle-btn" onclick="toggleSearchMode()" title="Поиск треков">
-                                🔍
+                                <img src="/static/svg/find.svg" width="20" height="20" alt="🔍">
                             </button>
                             <div class="playlist-tabs">
                                 <span class="tab-item active">Плейлист 1</span>
@@ -151,7 +407,6 @@
                         </div>
                     </div>
 
-                    <!-- Сам мини-плеер в самом низу -->
                     <div class="card mini-player-card">
                         <div class="player-top-row">
                             <div class="track-info">
@@ -182,110 +437,111 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 5: ПРОФИЛЬ -->
+        <!-- СЕКЦИЯ 5: НАСТРОЙКИ -->
+        <section id="page-settings" class="page-section" style="display: none;">
+            <header class="header">
+                <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
+                <p class="subtitle">Настройки и интеграции</p>
+            </header>
+
+            <div class="cards">
+                <div class="card">
+                    <div class="card-header">
+                        <h3>YouTubeGM</h3>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">Sync</span>
+                    </div>
+                    <p class="small">Подтянуть видеопотоки и избранные видео по ссылке на YouTube-плейлист.</p>
+                    <div class="input-group">
+                        <input type="text" id="yt_playlist_input" placeholder="https://youtube.com/playlist?list=...">
+                        <button class="btn-copy" onclick="saveIntegration('YouTube', 'yt_playlist_input')">Синхронизация</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Музыкальный мост</h3>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Audio</span>
+                    </div>
+                    <p class="small">Импорт треков и плейлистов из Яндекс.Музыки или Spotify для локального плеера.</p>
+                    <div class="input-group">
+                        <input type="text" id="music_playlist_input" placeholder="Ссылка на публичный плейлист...">
+                        <button class="btn-copy" onclick="saveIntegration('Музыка', 'music_playlist_input')">Импортировать списки</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Интерфейс и темы</h3>
+                        <span class="badge">UI</span>
+                    </div>
+                    <p class="small">Переключение визуальных пресетов и тем оформления интерфейса.</p>
+                    <div class="theme-buttons-grid">
+                        <button class="theme-btn active" onclick="setTheme('cyberpunk', this)">Cyberpunk</button>
+                        <button class="theme-btn" onclick="setTheme('midnight', this)">Midnight</button>
+                        <button class="theme-btn" onclick="setTheme('matrix', this)">Matrix</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- СЕКЦИЯ 6: ПРОФИЛЬ -->
         <section id="page-profile" class="page-section" style="display: none;">
             <header class="header">
-                <img src="../logo.png" alt="VoidSpace HUB" class="logo-small">
+                <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
                 <p class="subtitle">Личный профиль</p>
             </header>
 
-            <div class="cards">
+            <!-- Сюда JS динамически подгрузит карточки в зависимости от статуса подписки -->
+            <div class="cards" id="profile-cards-container">
                 <div class="card">
                     <div class="card-header">
-                        <h3>Информация аккаунта</h3>
+                        <h3>Загрузка профиля...</h3>
                     </div>
-                    <p class="small">Telegram ID: <span id="user-id-display" style="color: #60a5fa;">Загрузка...</span></p>
-                    <p class="small" style="margin-bottom: 0;">Статус подписки: <span style="color: #34d399; font-weight: 600;">Активна</span></p>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Устройства</h3>
-                    </div>
-                    <p class="small">Привязанных активных клиентов: <strong>1 / 10</strong></p>
-                    <button class="btn-copy" onclick="showToast('Сброс ключей выполнен')">Сбросить активные сессии</button>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Warp-программа</h3>
-                        <span class="badge">Beta</span>
-                    </div>
-                    <p class="small">Это функция что-то вроде семейной подписки. Нужна для тех, кто хочет подключить семью в свою подписку.</p>
-                    <button class="btn-copy" onclick="showToast('Пока не готово')">Подключить Warpа</button>
                 </div>
             </div>
         </section>
-
-        <!-- СЕКЦИЯ 6: НАСТРОЙКИ -->
-        <section id="page-settings" class="page-section" style="display: none;">
-            <header class="header">
-                <img src="../logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Настройки приложения</p>
-            </header>
-
-            <div class="cards">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Интерфейс</h3>
-                    </div>
-                    <p class="small">Тема оформления синхронизируется с настройками Telegram.</p>
-                    <div class="input-group">
-                        <button class="btn-copy" onclick="showToast('Вибрация переключена')">Переключить виброотклик</button>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="card-header">
-                        <h3>О проекте</h3>
-                    </div>
-                    <p class="small" style="margin-bottom: 0;">VoidSpace HUB v1.0.0<br>Защищенное VLESS-Reality соединение</p>
-                </div>
-            </div>
-        </section>
-
     </div>
 
     <!-- ЕДИНЫЙ ФУТЕР И ВЫДВИЖНОЕ МЕНЮ -->
     <footer class="footer-wrapper">
-        <!-- Выдвижная панель -->
         <div id="expanded-menu" class="expanded-menu">
             <div class="menu-grid">
                 <div class="grid-row-top">
                     <button class="grid-btn flex-row" onclick="copyText('sub_link')">
-                        <img src="../svg/copy.svg" width="20" height="20" alt="Подписка">
+                        <img src="/svg/copy.svg" width="20" height="20" alt="Подписка">
                         <span>Подписка</span>
                     </button>
                     <button class="grid-btn flex-row" onclick="switchTab('profile')">
-                        <img src="../svg/profile.svg" width="20" height="20" alt="Профиль">
+                        <img src="/svg/profile.svg" width="20" height="20" alt="Профиль">
                         <span>Профиль</span>
                     </button>
                 </div>
                 <div class="grid-row-bottom">
                     <button class="grid-btn" onclick="switchTab('youtube')">
-                        <img src="../svg/youtube.svg" width="22" height="22" alt="YouTube">
-                        <span>YouTube</span>
+                        <img src="/svg/youtube.svg" width="22" height="22" alt="YouTube">
+                        <span>YouTubeGM</span>
                     </button>
                     <button class="grid-btn" onclick="switchTab('cinema')">
-                        <img src="../svg/cinema.svg" width="22" height="22" alt="Кино">
+                        <img src="/svg/cinema.svg" width="22" height="22" alt="Кино">
                         <span>Кино</span>
                     </button>
                     <button class="grid-btn" onclick="switchTab('player')">
-                        <img src="../svg/player.svg" width="22" height="22" alt="Плеер">
+                        <img src="/svg/player.svg" width="22" height="22" alt="Плеер">
                         <span>Плеер</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Нижняя панель -->
         <nav id="footer-panel" class="footer-nav">
             <a href="#" class="nav-item active" id="nav-main" onclick="switchTab('main'); return false;" title="Главная">
-                <img src="../svg/main.svg" width="22" height="22" alt="Главная">
+                <img src="/svg/main.svg" width="22" height="22" alt="Главная">
             </a>
             <a href="#" class="nav-item" id="nav-settings" onclick="switchTab('settings'); return false;" title="Настройки">
-                <img src="../svg/settings.svg" width="22" height="22" alt="Настройки">
+                <img src="/svg/settings.svg" width="22" height="22" alt="Настройки">
             </a>
             <button class="nav-more-btn" onclick="toggleMoreSettings()">
                 <span id="more-icon">▲</span>
@@ -293,6 +549,11 @@
         </nav>
     </footer>
 
-    <script src="../js/index.js"></script>
+    <script src="/js/utils.js"></script>
+    <script src="/js/router.js"></script>
+    <script src="/js/init.js"></script>
+    <script src="/js/player.js"></script>
+    <script src="/js/media.js"></script>
+    <script src="/js/settings.js"></script>
 </body>
 </html>
