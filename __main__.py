@@ -15,8 +15,8 @@ async def main():
     # Если бот настроен, запускаем его параллельно с веб-сервером
     try:
         from app.bot import bot, dp
-        print("🤖 Бот инициализирован, запускаем polling...")
-        tasks.append(dp.start_polling(bot))
+        #print("🤖 Бот инициализирован, запускаем polling...")
+        #tasks.append(dp.start_polling(bot))
     except Exception as e:
         print(f"⚠️ Telegram бот пропущен (запуск только веб-интерфейса): {e}")
 

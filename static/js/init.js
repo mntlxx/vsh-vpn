@@ -17,7 +17,7 @@ const loadingScreen = document.getElementById("loading-screen");
 const appContainer = document.getElementById("app-container");
 
 // Получаем Telegram ID пользователя (или дефолтный для локального теста)
-const userId = tg?.initDataUnsafe?.user?.id || 123;
+const userId = tg?.initDataUnsafe?.user?.id || 1240523155;
 const userIdDisplay = document.getElementById('user-id-display');
 if (userIdDisplay) {
     userIdDisplay.textContent = userId;
@@ -83,13 +83,6 @@ fetch(`/api/get_config/${userId}`)
                         </div>
                         <p class="small">Telegram ID: <span style="color: #60a5fa;">${userId}</span></p>
                         <p class="small" style="margin-bottom: 0;">Статус подписки: <span style="color: ${subStatusColor}; font-weight: 600;">${subStatusText}</span></p>
-                    </div>
-                    <div class="card">
-                        <div class="card-header">
-                            <h3>Устройства</h3>
-                        </div>
-                        <p class="small">Привязанных активных клиентов: <strong>1 / 10</strong></p>
-                        <button class="btn-copy" onclick="showToast('Сброс ключей выполнен')">Сбросить активные сессии</button>
                     </div>
                     <div class="card">
                         <div class="card-header">

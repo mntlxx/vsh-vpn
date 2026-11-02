@@ -1,16 +1,3 @@
-// Открытие видео в YouTubeGM
-function openVideoPlayer(title, duration) {
-    const tg = window.Telegram?.WebApp;
-    if (tg?.HapticFeedback) {
-        tg.HapticFeedback.impactOccurred('medium');
-    }
-
-    const titleEl = document.getElementById('watch-video-title');
-    if (titleEl) titleEl.textContent = title;
-    
-    switchTab('watch');
-}
-
 // Лайки и подписки для видео
 function toggleLike(btn) {
     btn.classList.toggle('liked');
@@ -51,25 +38,4 @@ function openMoviePlayer(title, genres, year, rating) {
     if (mYear) mYear.textContent = year;
 
     switchTab('movie-watch');
-}
-
-async function loadYouTubeVideo(videoUrl) {
-    try {
-        const response = await fetch(`/api/youtube/resolve?url=${encodeURIComponent(videoUrl)}`);
-        const data = await response.json();
-
-        if (data.success) {
-            console.log("Видео найдено:", data.title);
-            
-            // Передаем прямую ссылку в стандартный HTML5 тег <video> или в кастомный плеер
-            const videoPlayer = document.getElementById('my-video-player');
-            if (videoPlayer) {
-                videoPlayer.src = data.stream_url;
-                videoPlayer.play();
-            }
-        }
-    } catch (err) {
-        console.error("Ошибка загрузки YouTube потока:", err);
-        showToast('Не удалось запустить видео');
-    }
 }

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ru">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -10,9 +11,10 @@
     <link rel="stylesheet" href="/css/player.css">
     <link rel="stylesheet" href="/css/profile.css">
     <link rel="stylesheet" href="/css/settings.css">
-    <link rel="stylesheet" href="/css/youtube.css">
+    <link rel="stylesheet" href="/css/anime.css">
     <link rel="stylesheet" href="/css/watch.css">
 </head>
+
 <body>
     <input type="text" id="sub_link" readonly onclick="this.select()" style="display: none;">
     <!-- Всплывающее уведомление (Toast) -->
@@ -29,12 +31,17 @@
 
     <!-- КОНТЕЙНЕР ПРИЛОЖЕНИЯ (Все экраны внутри) -->
     <div id="app-container" class="app-container" style="display: none;">
-        
+
         <!-- СЕКЦИЯ 1: ГЛАВНАЯ -->
         <section id="page-main" class="page-section">
             <header class="header">
                 <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Главная панель</p>
+
+                <div class="header-center">
+                    <h1>Главная</h1>
+                </div>
+
+                <span class="badge badge-active">Работяга</span>
             </header>
 
             <div class="cards">
@@ -81,7 +88,7 @@
                     <div class="card-header">
                         <h3>Состояние серверов</h3>
                     </div>
-                
+
                     <!-- Добавили ID сюда, чтобы JS понимал, куда вставлять данные из базы -->
                     <div class="status-list" id="servers-list-container">
                         <!-- Здесь будет динамика из 3x-ui -->
@@ -92,7 +99,8 @@
                 <div class="card status-overview-card">
                     <div class="card-header">
                         <h3>Активные модули</h3>
-                        <span class="badge" style="background: rgba(52, 211, 153, 0.2); color: #34d399;">Все системы в норме</span>
+                        <span class="badge" style="background: rgba(52, 211, 153, 0.2); color: #34d399;">Все системы в
+                            норме</span>
                     </div>
 
                     <div class="status-list">
@@ -118,149 +126,151 @@
             </div>
         </section>
 
-        <!-- СЕКЦИЯ 2: YOUTUBE -->
-        <section id="page-youtube" class="page-section" style="display: none;">
+        <!-- СЕКЦИЯ 2: ANIMEGM (Каталог и Главная аниме) -->
+        <section id="page-anime" class="page-section" style="display: none;">
             <header class="header">
                 <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">YouTubeGM</p>
+
+                <div class="header-center">
+                    <h1>AniGM</h1>
+                    <p class="subtitle">Каталог аниме</p>
+                </div>
+
+                <span class="badge badge-active">Работяга</span>
             </header>
 
-            <div class="cards">
-                <!-- Статус обхода -->
-                <div class="card" style="padding: 14px 18px;">
-                    <div class="card-header" style="margin-bottom: 2px;">
-                        <h3>Статус обхода</h3>
-                        <span class="badge" style="background: rgba(52, 211, 153, 0.2); color: #34d399;">Онлайн</span>
+            <div class="anime-content-container">
+
+                <!-- Блок поиска -->
+                <div class="card search-card">
+                    <div class="search-wrapper">
+                        <div class="search-input-container">
+                            <input type="text" id="anime-search-input" class="search-input"
+                                placeholder="Введите название аниме..."
+                                onkeydown="if(event.key==='Enter') searchAnime()">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <button class="btn-search" onclick="searchAnime()">Найти</button>
                     </div>
-                    <p class="small" style="margin-bottom: 0;">Маршрутизация видеопотоков оптимизирована.</p>
                 </div>
 
-                <!-- КАТАЛОГ ВИДЕОКАРТОЧЕК -->
-                <div class="video-feed">
-                    <!-- Видео карточка 1 -->
-                    <div class="video-card" onclick="openVideoPlayer('Космические путешествия и как они устроены', '12:45')">
-                        <div class="video-thumbnail-wrapper">
-                            <div class="video-thumbnail" style="background: linear-gradient(135deg, #1e293b, #3b82f6);">
-                                <span class="play-icon-overlay">▶</span>
-                            </div>
-                            <span class="video-duration">12:45</span>
-                        </div>
-                        <div class="video-details">
-                            <h4 class="video-title">Космические путешествия и как они устроены</h4>
-                            <div class="video-meta">
-                                <span>VoidSpace Media</span>
-                                <span>•</span>
-                                <span>14 тыс. просмотров</span>
-                            </div>
-                        </div>
+                <!-- Секция: Рекомендуем (Карусель) -->
+                <div class="anime-section">
+                    <div class="anime-section-header">
+                        <h3>⭐ Рекомендуем</h3>
                     </div>
-
-                    <!-- Видео карточка 2 -->
-                    <div class="video-card" onclick="openVideoPlayer('Секреты оптимизации VLESS-Reality узлов', '08:15')">
-                        <div class="video-thumbnail-wrapper">
-                            <div class="video-thumbnail" style="background: linear-gradient(135deg, #0f172a, #8b5cf6);">
-                                <span class="play-icon-overlay">▶</span>
+                    <div class="carousel">
+                        <div class="carousel-track">
+                            <div class="anime-poster-card" onclick="openAnimeDetail(1, 'Клинок, рассекающий демонов')">
+                                <img src="/static/testing/anime/photo1.jpg" alt="Клинок, рассекающий демонов">
+                                <p>Клинок, рассекающий демонов</p>
+                                <span style="color: #34d399;">ТВ (7 сер.), 2026</span>
                             </div>
-                            <span class="video-duration">08:15</span>
-                        </div>
-                        <div class="video-details">
-                            <h4 class="video-title">Секреты оптимизации VLESS-Reality узлов</h4>
-                            <div class="video-meta">
-                                <span>Hub Tech</span>
-                                <span>•</span>
-                                <span>8.2 тыс. просмотров</span>
+                            <div class="anime-poster-card" onclick="openAnimeDetail(2, 'Магическая битва')">
+                                <img src="/static/testing/anime/photo2.jpg" alt="Магическая битва">
+                                <p>Магическая битва</p>
+                                <span style="color: #34d399;">ТВ (12 сер.), 2025</span>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Видео карточка 3 -->
-                    <div class="video-card" onclick="openVideoPlayer('Киберпанк и эстетика темных интерфейсов', '21:00')">
-                        <div class="video-thumbnail-wrapper">
-                            <div class="video-thumbnail" style="background: linear-gradient(135deg, #18181b, #ec4899);">
-                                <span class="play-icon-overlay">▶</span>
-                            </div>
-                            <span class="video-duration">21:00</span>
-                        </div>
-                        <div class="video-details">
-                            <h4 class="video-title">Киберпанк и эстетика темных интерфейсов в UI/UX</h4>
-                            <div class="video-meta">
-                                <span>Design Lab</span>
-                                <span>•</span>
-                                <span>25 тыс. просмотров</span>
+                            <div class="anime-poster-card" onclick="openAnimeDetail(3, 'Человек-бензопила')">
+                                <img src="/static/testing/anime/photo3.jpg" alt="Человек-бензопила">
+                                <p>Человек-бензопила</p>
+                                <span style="color: #34d399;">ТВ (12 сер.), 2024</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Секция: Популярное сейчас (Карусель) -->
+                <div class="anime-section">
+                    <div class="anime-section-header">
+                        <h3>🔥 Популярное сейчас</h3>
+                    </div>
+                    <div class="carousel">
+                        <div class="carousel-track">
+                            <div class="anime-poster-card" onclick="openAnimeDetail(4, 'Наруто: Возвращение')">
+                                <img src="/static/testing/anime/photo.png" alt="Наруто">
+                                <p>Наруто: Возвращение</p>
+                                <span style="color: #34d399;">Эпизод 145 / 500</span>
+                            </div>
+                            <div class="anime-poster-card" onclick="openAnimeDetail(5, 'Ван Пис')">
+                                <img src="/static/testing/anime/photo.png" alt="Ван Пис">
+                                <p>Ван Пис</p>
+                                <span style="color: #34d399;">Эпизод 1112 онгоинг</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Секция: Горячие новинки (Карусель) -->
+                <div class="anime-section">
+                    <div class="anime-section-header">
+                        <h3>✨ Горячие новинки</h3>
+                    </div>
+                    <div class="carousel">
+                        <div class="carousel-track">
+                            <div class="anime-poster-card" onclick="openAnimeDetail(6, 'Одинокий рокер!')">
+                                <img src="/static/testing/anime/photo.png" alt="Новинка">
+                                <p>Одинокий рокер!</p>
+                                <span style="color: #f59e0b;">Новая серия</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <!-- СЕКЦИЯ ПРОСМОТРА ВИДЕО (WATCH) -->
+        <!-- СЕКЦИЯ ПРОСМОТРА АНИМЕ (WATCH) -->
         <section id="page-watch" class="page-section" style="display: none;">
             <div class="watch-top-bar">
-                <button class="back-btn" onclick="switchTab('youtube')">
-                    ← Назад к ленте
-                </button>
-                <span class="watch-header-title">YouTubeGM</span>
+                <button class="back-btn" onclick="switchTab('anime')">← Назад в каталог</button>
+                <span class="watch-header-title" id="watch-anime-top-title">AniGM Player</span>
             </div>
 
-            <div class="cards">
+            <div class="watch-container">
+                <!-- Плеер -->
                 <div class="card watch-player-card">
                     <div class="video-container">
-                        <div class="video-placeholder-screen">
-                            <button class="big-play-btn" onclick="showToast('Воспроизведение видео...')">▶</button>
-                            <span class="live-badge">HD 1080p</span>
+                        <div id="yt-player-loader"
+                            style="position: absolute; text-align: center; color: white; z-index: 2; display: none;">
+                            <div class="spinner" style="margin: 0 auto 10px;"></div>
+                            <span class="small" style="color: #94a3b8;">Загрузка видеопотока...</span>
+                        </div>
+                        <iframe src="https://kodikplayer.com/serial/53973/8ea8930aaf747fd9364e99b03393b655/720p?episode=1&hide_selectors=true" frameborder="0" allowfullscreen="" allow="autoplay; fullscreen" style="width: 100%; height: 100%;"></iframe>
+                    </div>
+                </div>
+
+                <!-- Настройки (Озвучка и Серии) -->
+                <div class="watch-settings-card">
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <div class="settings-row">
+                            <span class="settings-label">Озвучка:</span>
+                            <div id="dub-selector" class="dub-selector-group">
+                                <button class="dub-btn active" onclick="selectDub('AniLibria', this)">AniLibria</button>
+                                <button class="dub-btn" onclick="selectDub('Студийная Банда', this)">Студийная
+                                    Банда</button>
+                            </div>
+                        </div>
+                        <div class="settings-row">
+                            <span class="settings-label">Серия:</span>
+                            <div id="episodes-list-bar" class="episodes-bar" style="overflow-x: auto; max-width: 70%;">
+                                <!-- Динамически заполняется из anime.js -->
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card watch-info-card">
-                    <h2 id="watch-video-title" class="watch-title">Название загружаемого видеоролика</h2>
+                <!-- Информация -->
+                <div class="watch-info-card">
+                    <h2 id="watch-video-title" class="watch-title">Название аниме - Серия 1</h2>
                     <div class="watch-stats">
-                        <span id="watch-video-views">14 тыс. просмотров</span>
-                        <span id="watch-video-date">Опубликовано 2 дня назад</span>
+                        <span id="watch-video-duration">24 мин</span>
+                        <span>•</span>
+                        <span style="color: #34d399;">HD 1080p</span>
                     </div>
 
-                    <div class="watch-actions">
-                        <button class="action-btn" onclick="toggleLike(this)">
-                            ❤️ <span id="like-count">1.4k</span>
-                        </button>
-                        <button class="action-btn" onclick="copyText('sub_link')">
-                            🔗 Поделиться
-                        </button>
-                        <button class="action-btn" onclick="showToast('Добавлено в избранное')">
-                            ⭐ В избранное
-                        </button>
-                    </div>
-
-                    <div class="channel-row">
-                        <div class="channel-avatar">VS</div>
-                        <div class="channel-meta">
-                            <h4>VoidSpace Media</h4>
-                            <p class="small">12.4 тыс. подписчиков</p>
-                        </div>
-                        <button class="subscribe-btn" onclick="toggleSubscribe(this)">Подписаться</button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Похожие видео</h3>
-                    </div>
-                    <div class="related-feed">
-                        <div class="related-item" onclick="openVideoPlayer('Секреты оптимизации VLESS-Reality узлов', '08:15')">
-                            <div class="related-thumb" style="background: linear-gradient(135deg, #0f172a, #8b5cf6);"></div>
-                            <div class="related-info">
-                                <h4>Секреты оптимизации VLESS-Reality узлов</h4>
-                                <p>Hub Tech • 8.2 тыс. просмотров</p>
-                            </div>
-                        </div>
-                        <div class="related-item" onclick="openVideoPlayer('Киберпанк и эстетика темных интерфейсов', '21:00')">
-                            <div class="related-thumb" style="background: linear-gradient(135deg, #18181b, #ec4899);"></div>
-                            <div class="related-info">
-                                <h4>Киберпанк и эстетика темных интерфейсов</h4>
-                                <p>Design Lab • 25 тыс. просмотров</p>
-                            </div>
-                        </div>
+                    <div style="margin-top: 14px; display: flex; gap: 8px;">
+                        <button class="action-btn" onclick="copyCurrentVideoLink()">🔗 Поделиться ссылкой</button>
                     </div>
                 </div>
             </div>
@@ -270,21 +280,30 @@
         <section id="page-cinema" class="page-section" style="display: none;">
             <header class="header">
                 <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Кинотеатр VoidSpace</p>
+
+                <div class="header-center">
+                    <h1>Кино</h1>
+                    <p class="subtitle">Absolute cinema</p>
+                </div>
+
+                <span class="badge badge-active">Работяга</span>
             </header>
 
             <div class="cards">
                 <div class="card" style="padding: 14px 18px;">
                     <div class="card-header" style="margin-bottom: 2px;">
                         <h3>4K HDR Стриминг</h3>
-                        <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">Без лимита</span>
+                        <span class="badge" style="background: rgba(59, 130, 246, 0.2); color: #60a5fa;">Без
+                            лимита</span>
                     </div>
-                    <p class="small" style="margin-bottom: 0;">Прямой доступ к медиатеке релизов на максимальной скорости.</p>
+                    <p class="small" style="margin-bottom: 0;">Прямой доступ к медиатеке релизов на максимальной
+                        скорости.</p>
                 </div>
-
                 <div class="cinema-feed">
-                    <div class="cinema-card" onclick="openMoviePlayer('Интерстеллар', 'Фантастика, Драма', '2014', '9.2')">
-                        <div class="cinema-poster-wrapper" style="background: linear-gradient(135deg, #090d16, #1e3a8a);">
+                    <div class="cinema-card"
+                        onclick="openMoviePlayer('Интерстеллар', 'Фантастика, Драма', '2014', '9.2')">
+                        <div class="cinema-poster-wrapper"
+                            style="background: linear-gradient(135deg, #090d16, #1e3a8a);">
                             <span class="movie-rating-badge">⭐ 9.2</span>
                             <div class="play-icon-overlay">▶</div>
                         </div>
@@ -293,9 +312,9 @@
                             <p class="cinema-meta">Фантастика • 2014 • 2ч 49мин</p>
                         </div>
                     </div>
-
                     <div class="cinema-card" onclick="openMoviePlayer('Начало', 'Триллер, Фантастика', '2010', '8.8')">
-                        <div class="cinema-poster-wrapper" style="background: linear-gradient(135deg, #18181b, #3f3f46);">
+                        <div class="cinema-poster-wrapper"
+                            style="background: linear-gradient(135deg, #18181b, #3f3f46);">
                             <span class="movie-rating-badge">⭐ 8.8</span>
                             <div class="play-icon-overlay">▶</div>
                         </div>
@@ -304,9 +323,10 @@
                             <p class="cinema-meta">Фантастика • 2010 • 2ч 28мин</p>
                         </div>
                     </div>
-
-                    <div class="cinema-card" onclick="openMoviePlayer('Бегущий по лезвию 2049', 'Киберпанк, Драма', '2017', '8.5')">
-                        <div class="cinema-poster-wrapper" style="background: linear-gradient(135deg, #451a03, #b45309);">
+                    <div class="cinema-card"
+                        onclick="openMoviePlayer('Бегущий по лезвию 2049', 'Киберпанк, Драма', '2017', '8.5')">
+                        <div class="cinema-poster-wrapper"
+                            style="background: linear-gradient(135deg, #451a03, #b45309);">
                             <span class="movie-rating-badge">⭐ 8.5</span>
                             <div class="play-icon-overlay">▶</div>
                         </div>
@@ -318,7 +338,6 @@
                 </div>
             </div>
         </section>
-
         <!-- СЕКЦИЯ ПРОСМОТРА КИНО (MOVIE WATCH) -->
         <section id="page-movie-watch" class="page-section" style="display: none;">
             <div class="watch-top-bar">
@@ -327,24 +346,22 @@
                 </button>
                 <span class="watch-header-title">Кинозал</span>
             </div>
-
             <div class="cards">
                 <div class="card watch-player-card">
                     <div class="video-container">
-                        <div class="video-placeholder-screen" style="background: linear-gradient(135deg, #090d16, #172554);">
+                        <div class="video-placeholder-screen"
+                            style="background: linear-gradient(135deg, #090d16, #172554);">
                             <button class="big-play-btn" onclick="showToast('Запуск видеопотока...')">▶</button>
                             <span class="live-badge">4K ULTRA HD</span>
                         </div>
                     </div>
                 </div>
-
                 <div class="card watch-info-card">
                     <h2 id="movie-title" class="watch-title">Название фильма</h2>
                     <div class="watch-stats">
                         <span id="movie-genres">Фантастика, Драма</span>
                         <span id="movie-year">2014</span>
                     </div>
-
                     <div class="watch-actions">
                         <button class="action-btn" onclick="toggleLike(this)">
                             ❤️ В избранное
@@ -356,19 +373,25 @@
                             ⚙️ Качество
                         </button>
                     </div>
-
                     <p class="small" style="margin-top: 6px; line-height: 1.5;">
-                        Когда засуха приводит человечество к продовольственному кризису, коллектив исследователей и ученых отправляется сквозь червоточину в путешествие, чтобы превзойти прежние ограничения для космических путешествий человека.
+                        Когда засуха приводит человечество к продовольственному кризису, коллектив исследователей и
+                        ученых отправляется сквозь червоточину в путешествие, чтобы превзойти прежние ограничения для
+                        космических путешествий человека.
                     </p>
                 </div>
             </div>
         </section>
-
         <!-- СЕКЦИЯ 4: ПЛЕЕР -->
         <section id="page-player" class="page-section" style="display: none;">
             <header class="header">
                 <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Плеер</p>
+
+                <div class="header-center">
+                    <h1>Плеер</h1>
+                    <p class="subtitle">Если и жить, то под музыку</p>
+                </div>
+
+                <span class="badge badge-active">Работяга</span>
             </header>
 
             <div class="cards player-page-layout">
@@ -380,7 +403,6 @@
                         </div>
                         <div class="playlist" id="playlist"></div>
                     </div>
-
                     <div id="view-search" style="display: none;">
                         <div class="card-header">
                             <h3>Поиск треков</h3>
@@ -392,11 +414,11 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="player-docked-bottom">
                     <div class="card playlist-selector-card">
                         <div class="playlist-nav-bar">
-                            <button class="search-toggle-btn" id="search-toggle-btn" onclick="toggleSearchMode()" title="Поиск треков">
+                            <button class="search-toggle-btn" id="search-toggle-btn" onclick="toggleSearchMode()"
+                                title="Поиск треков">
                                 <img src="/static/svg/find.svg" width="20" height="20" alt="🔍">
                             </button>
                             <div class="playlist-tabs">
@@ -406,60 +428,63 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="card mini-player-card">
                         <div class="player-top-row">
                             <div class="track-info">
                                 <h3 id="current-track-title">Выберите трек</h3>
                                 <p class="small" id="current-track-file">testing/player</p>
                             </div>
-                            
+
                             <div class="player-controls-mini">
                                 <button class="ctrl-btn-mini" onclick="prevTrack()">⏮</button>
                                 <button class="ctrl-btn-mini main-play" id="play-btn" onclick="togglePlay()">▶</button>
                                 <button class="ctrl-btn-mini" onclick="nextTrack()">⏭</button>
                             </div>
                         </div>
-
                         <div class="progress-container" onclick="seekTrack(event)">
                             <div id="progress-bar" class="progress-bar"></div>
                         </div>
-
                         <div class="player-bottom-row">
                             <div class="time-codes">
                                 <span id="current-time">0:00</span> / <span id="total-duration">0:00</span>
                             </div>
-                            
+
                             <div class="volume-control">
                                 <span>🔊</span>
-                                <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1" oninput="changeVolume(this.value)">
+                                <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="1"
+                                    oninput="changeVolume(this.value)">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
-
         <!-- СЕКЦИЯ 5: НАСТРОЙКИ -->
         <section id="page-settings" class="page-section" style="display: none;">
             <header class="header">
                 <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Настройки и интеграции</p>
+
+                <div class="header-center">
+                    <h1>Настройки</h1>
+                </div>
+
+                <span class="badge badge-active">Работяга</span>
             </header>
 
             <div class="cards">
                 <div class="card">
                     <div class="card-header">
-                        <h3>YouTubeGM</h3>
-                        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">Sync</span>
+                        <h3>YouTubeGM Channels</h3>
+                        <span class="badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171;">YouTubeGM</span>
                     </div>
-                    <p class="small">Подтянуть видеопотоки и избранные видео по ссылке на YouTube-плейлист.</p>
+                    <p class="small">Вставьте ссылку, чтобы подтянуть видео из этого канала - это поможет вам посмотреть
+                        видео с данного канала, а другим пользователям будет, что рекомендовать</p>
                     <div class="input-group">
-                        <input type="text" id="yt_playlist_input" placeholder="https://youtube.com/playlist?list=...">
-                        <button class="btn-copy" onclick="saveIntegration('YouTube', 'yt_playlist_input')">Синхронизация</button>
+                        <input type="text" id="yt_playlist_input" placeholder="https://youtube.com/@...">
+                        <button class="btn-copy" onclick="saveIntegration('YouTube', 'yt_playlist_input')">Добавить
+                            канал</button>
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="card-header">
                         <h3>Музыкальный мост</h3>
@@ -468,10 +493,10 @@
                     <p class="small">Импорт треков и плейлистов из Яндекс.Музыки или Spotify для локального плеера.</p>
                     <div class="input-group">
                         <input type="text" id="music_playlist_input" placeholder="Ссылка на публичный плейлист...">
-                        <button class="btn-copy" onclick="saveIntegration('Музыка', 'music_playlist_input')">Импортировать списки</button>
+                        <button class="btn-copy"
+                            onclick="saveIntegration('Музыка', 'music_playlist_input')">Импортировать списки</button>
                     </div>
                 </div>
-
                 <div class="card">
                     <div class="card-header">
                         <h3>Интерфейс и темы</h3>
@@ -486,12 +511,16 @@
                 </div>
             </div>
         </section>
-
         <!-- СЕКЦИЯ 6: ПРОФИЛЬ -->
         <section id="page-profile" class="page-section" style="display: none;">
             <header class="header">
                 <img src="/static/logo.png" alt="VoidSpace HUB" class="logo-small">
-                <p class="subtitle">Личный профиль</p>
+
+                <div class="header-center">
+                    <h1>Профиль</h1>
+                </div>
+
+                <span class="badge badge-active">Работяга</span>
             </header>
 
             <!-- Сюда JS динамически подгрузит карточки в зависимости от статуса подписки -->
@@ -520,9 +549,9 @@
                     </button>
                 </div>
                 <div class="grid-row-bottom">
-                    <button class="grid-btn" onclick="switchTab('youtube')">
-                        <img src="/svg/youtube.svg" width="22" height="22" alt="YouTube">
-                        <span>YouTubeGM</span>
+                    <button class="grid-btn" onclick="switchTab('anime')">
+                        <img src="/svg/video.svg" width="22" height="22" alt="Аниме">
+                        <span>AniGM</span>
                     </button>
                     <button class="grid-btn" onclick="switchTab('cinema')">
                         <img src="/svg/cinema.svg" width="22" height="22" alt="Кино">
@@ -537,10 +566,12 @@
         </div>
 
         <nav id="footer-panel" class="footer-nav">
-            <a href="#" class="nav-item active" id="nav-main" onclick="switchTab('main'); return false;" title="Главная">
+            <a href="#" class="nav-item active" id="nav-main" onclick="switchTab('main'); return false;"
+                title="Главная">
                 <img src="/svg/main.svg" width="22" height="22" alt="Главная">
             </a>
-            <a href="#" class="nav-item" id="nav-settings" onclick="switchTab('settings'); return false;" title="Настройки">
+            <a href="#" class="nav-item" id="nav-settings" onclick="switchTab('settings'); return false;"
+                title="Настройки">
                 <img src="/svg/settings.svg" width="22" height="22" alt="Настройки">
             </a>
             <button class="nav-more-btn" onclick="toggleMoreSettings()">
@@ -555,5 +586,7 @@
     <script src="/js/player.js"></script>
     <script src="/js/media.js"></script>
     <script src="/js/settings.js"></script>
+    <script src="/js/anime.js"></script>
 </body>
+
 </html>
